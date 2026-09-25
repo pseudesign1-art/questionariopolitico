@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questionário de Posicionamento Político</title>
+  <style>
+    :root{--bg:#f5f6f8;--card:#fff;--text:#17191d;--muted:#69707a;--line:#dfe3e8;--accent:#263b80;--accent2:#e9edfa}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:780px;margin:0 auto;padding:28px 18px 60px}.top{margin-bottom:22px}h1{font-size:clamp(26px,5vw,40px);line-height:1.08;margin:0 0 10px}
+    .intro,.muted{color:var(--muted);line-height:1.55}.meta{display:flex;justify-content:space-between;gap:16px;margin:20px 0 8px;font-size:14px;font-weight:650}
+    .bar{height:9px;background:#e4e7eb;border-radius:999px;overflow:hidden}.fill{height:100%;width:0;background:var(--accent);transition:.25s}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(20px,4vw,32px);margin-top:22px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-size:12px;font-weight:750}.question{font-size:clamp(20px,3.5vw,27px);line-height:1.3;margin:8px 0 22px}
+    .options{display:grid;gap:11px}.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:13px;padding:15px;cursor:pointer;line-height:1.42;background:#fff}
+    .opt:hover{border-color:#aeb8d7}.opt:has(input:checked){border-color:var(--accent);background:var(--accent2)}input{margin-top:3px;accent-color:var(--accent);width:18px;height:18px;flex:none}
+    .nav{display:flex;justify-content:space-between;gap:12px;margin-top:18px}.btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px 18px;min-height:46px;font-weight:700;cursor:pointer}
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn:disabled{opacity:.4;cursor:not-allowed}.error{color:#a52a2a;font-size:14px;font-weight:650;margin-top:14px}
+    .hidden{display:none!important}.result-row{margin:24px 0}.rhead,.rlabels{display:flex;justify-content:space-between;gap:16px}.rhead{font-weight:750;margin-bottom:8px}.rlabels{font-size:12px;color:var(--muted);margin-top:7px}
+    .rbar{height:13px;background:#e5e8ed;border-radius:999px;overflow:hidden}.rfill{height:100%;background:var(--accent)}.notice{background:#f1f3f6;border-radius:12px;padding:15px;margin-top:24px;font-size:14px;line-height:1.5}
+    footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}@media(max-width:480px){.wrap{padding:20px 12px 44px}.nav .btn{flex:1}.card{border-radius:14px}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <h1>Questionário de Posicionamento Político</h1>
+    <p class="intro">30 perguntas sobre economia, instituições, costumes, segurança, identidade nacional e transformação social. O resultado apresenta tendências em diferentes eixos, sem indicar uma posição como melhor ou recomendar escolhas eleitorais.</p>
+    <div class="meta"><span id="section">Bloco 1 de 6</span><span id="count">Pergunta 1 de 30</span></div>
+    <div class="bar"><div class="fill" id="progress"></div></div>
+  </header>
+
+  <section id="quiz">
+    <article class="card">
+      <div class="eyebrow" id="dimension"></div>
+      <h2 class="question" id="question"></h2>
+      <div class="options" id="options"></div>
+      <div id="error" class="error hidden">Escolha uma alternativa para continuar.</div>
+    </article>
+    <nav class="nav">
+      <button class="btn" id="back" type="button">Anterior</button>
+      <button class="btn primary" id="next" type="button">Próxima</button>
+    </nav>
+  </section>
+
+  <section id="results" class="hidden">
+    <article class="card">
+      <div class="eyebrow">Resultado</div>
+      <h2 class="question">Seu perfil político multidimensional</h2>
+      <p class="muted">As barras mostram tendências relativas às suas respostas. A classificação abaixo indica a tradição política com maior similaridade ao conjunto das respostas.</p>
+      <div id="ideologyResult" class="notice" style="margin:22px 0"></div>
+      <div id="resultBars"></div>
+      <h3>Leitura geral</h3>
+      <p id="summary" class="intro"></p>
+      <div class="notice"><strong>Nota metodológica:</strong> este é um questionário exploratório, não um teste psicométrico validado. A ideologia exibida representa similaridade com perfis de referência definidos para este questionário; não é uma determinação objetiva da identidade política da pessoa. Posições reais podem combinar elementos de tradições diferentes.</div>
+      <button class="btn" id="restart" type="button" style="margin-top:20px">Refazer questionário</button>
+    </article>
+  </section>
+  <footer>Questionário independente para fins informativos e recreativos.</footer>
+</main>
+
+<script>
+const sections = [
+["Economia e propriedade",[
+["Qual deve ser o modelo predominante de propriedade das grandes empresas?",["Propriedade coletiva, administrada pelos trabalhadores ou pela sociedade.","Empresas públicas nos setores estratégicos e privadas nos demais.","Empresas majoritariamente privadas, com regulação e proteção trabalhista.","Empresas privadas, com pouca intervenção governamental.","Empresas privadas subordinadas aos objetivos estratégicos definidos pelo Estado."]],
+["Como o governo deve lidar com grandes desigualdades de renda?",["Transformar a estrutura de propriedade que produz essas desigualdades.","Redistribuir renda por impostos progressivos e serviços públicos universais.","Garantir oportunidades e assistência direcionada aos mais pobres.","Priorizar crescimento econômico e reduzir intervenções redistributivas.","Manter diferenças de renda quando resultarem das funções econômicas e sociais de cada grupo."]],
+["Qual deve ser o papel dos sindicatos?",["Participar diretamente da gestão das empresas e da economia.","Negociar coletivamente, com ampla proteção legal.","Negociar, mas com limites para greves em serviços essenciais.","Atuar voluntariamente, sem privilégios legais sobre contratos individuais.","Ser integrados a organizações profissionais supervisionadas pelo Estado."]],
+["Diante de uma crise econômica grave, qual seria sua prioridade?",["Transferir grandes empresas para o controle coletivo dos trabalhadores.","Ampliar investimentos públicos, empregos e proteção social.","Oferecer auxílio temporário e estimular empresas privadas.","Reduzir impostos, gastos e obstáculos à atividade empresarial.","Coordenar diretamente a produção e os investimentos nacionais."]],
+["Quem deve controlar serviços como água, energia e transporte?",["A comunidade e os trabalhadores, por organizações de propriedade coletiva.","Principalmente o Estado, com controle público e participação social.","Empresas públicas ou privadas, conforme eficiência e interesse coletivo.","Preferencialmente empresas privadas, sujeitas a contratos e fiscalização.","O Estado ou empresas nacionais submetidas a diretrizes estratégicas."]]
+]],
+["Democracia, instituições e poder",[
+["Qual modelo de organização política você prefere?",["Democracia direta, com conselhos populares e representantes revogáveis.","Democracia representativa com eleições, direitos e participação popular.","Democracia representativa com instituições estáveis e poderes equilibrados.","Governo com autoridade executiva ampliada para tomar decisões rapidamente.","Poder político concentrado em uma liderança ou organização que represente o projeto nacional."]],
+["Se um governo eleito enfrentar forte oposição institucional, o que deve fazer?",["Mobilizar a população e propor mudanças estruturais por meios participativos.","Negociar e utilizar os mecanismos democráticos existentes.","Respeitar as decisões institucionais, mesmo que isso limite seu programa.","Ampliar legalmente os poderes do Executivo para superar impasses.","Subordinar as instituições contrárias ao projeto político do governo."]],
+["Qual deve ser o tratamento dado a partidos que defendem ideias radicalmente diferentes das suas?",["Garantir sua atuação, desde que não recorram à violência ou eliminem direitos políticos.","Garantir sua atuação e o direito de disputar eleições em igualdade de condições.","Permitir sua atuação, com limites legais para organizações antidemocráticas.","Restringir organizações consideradas ameaças graves à estabilidade nacional.","Impedir a atuação de organizações contrárias ao projeto político dominante."]],
+["Qual deve ser a relação entre governo e imprensa?",["Independência editorial, com medidas contra a concentração dos meios de comunicação.","Liberdade de imprensa, transparência e responsabilização judicial por abusos.","Ampla liberdade editorial e intervenção estatal mínima.","Restrições excepcionais em situações de grave ameaça à segurança nacional.","Meios de comunicação orientados pelos objetivos políticos do Estado."]],
+["Em que circunstâncias você considera legítima uma revolução política?",["Quando necessária para substituir estruturas de exploração, com participação popular.","Quando um regime impede mudanças democráticas e viola sistematicamente direitos.","Somente como último recurso contra uma ditadura, quando não houver saída pacífica.","Não considero legítima a revolução; mudanças devem ocorrer pela ordem legal.","Quando necessária para restaurar a ordem nacional ou instaurar um novo regime."]]
+]],
+["Liberdades individuais e costumes",[
+["Como o Estado deve lidar com decisões pessoais sobre casamento, sexualidade e identidade?",["Garantir autonomia e atuar contra desigualdades estruturais.","Garantir direitos iguais e proteger contra discriminação.","Garantir liberdade individual, evitando interferir em escolhas privadas.","Preservar juridicamente algumas normas familiares e sociais tradicionais.","Promover um modelo oficial de família e conduta social."]],
+["Qual deve ser a relação entre religião e Estado?",["Estado laico, com atuação contra privilégios religiosos.","Estado laico, garantindo liberdade religiosa e igualdade entre crenças.","Estado laico, permitindo que valores religiosos influenciem o debate público.","Leis e políticas devem refletir parte importante da tradição religiosa nacional.","A religião tradicional deve orientar oficialmente as instituições políticas."]],
+["Qual abordagem você prefere para o uso pessoal de drogas?",["Legalização e regulação, com prioridade à saúde pública.","Descriminalização do usuário e ampliação dos serviços de tratamento.","Manutenção de restrições, com tratamento em vez de prisão para usuários.","Proibição com fiscalização e sanções legais.","Proibição rigorosa e repressão intensiva ao consumo e ao comércio."]],
+["Qual deve ser o papel do governo na preservação de costumes tradicionais?",["Não deve privilegiar tradições e precisa combater normas discriminatórias.","Deve proteger a liberdade de preservar ou abandonar tradições.","Deve valorizar tradições sem impor sua observância.","Deve promover ativamente valores e instituições tradicionais.","Deve estabelecer normas de conduta baseadas na tradição nacional."]],
+["Quando a liberdade de expressão entra em conflito com outros direitos, qual princípio deve prevalecer?",["Proteger a expressão, com restrições específicas contra ameaças e incitação à violência.","Equilibrar a expressão com direitos individuais por meio de leis e decisões judiciais.","Admitir restrições mínimas, apenas em situações precisamente definidas.","Permitir restrições mais amplas para preservar a ordem e a coesão social.","Subordinar a expressão pública aos interesses políticos e culturais do Estado."]]
+]],
+["Segurança, justiça e autoridade",[
+["Qual deve ser a principal prioridade da política de segurança?",["Reduzir desigualdades e reformar profundamente as instituições policiais e penais.","Combinar prevenção social, investigação, policiamento e reintegração.","Investir em policiamento profissional, investigação e aplicação das leis.","Ampliar penas e poderes policiais, mantendo garantias judiciais.","Conceder amplos poderes às forças de segurança para eliminar ameaças à ordem."]],
+["Como devem funcionar as prisões?",["Priorizar alternativas ao encarceramento e a reintegração social.","Combinar responsabilização, recuperação e proteção da sociedade.","Priorizar o cumprimento proporcional das penas e a redução da reincidência.","Ampliar o encarceramento para crimes graves e reincidentes.","Adotar punições extremamente severas e regimes rigorosos de disciplina."]],
+["Qual é sua posição sobre a vigilância estatal para prevenir crimes?",["Restringi-la fortemente e ampliar o controle social sobre os órgãos de segurança.","Permiti-la mediante autorização judicial e fiscalização independente.","Permiti-la em situações previstas em lei, com supervisão institucional.","Ampliá-la para prevenir ameaças graves, mesmo com alguma redução de privacidade.","Autorizar vigilância abrangente de pessoas e organizações consideradas ameaças."]],
+["Como devem ser tratadas manifestações que interrompem serviços ou bloqueiam vias?",["Proteger amplamente o direito de protesto, inclusive formas de desobediência civil pacífica.","Permitir manifestações, com medidas proporcionais para proteger outros direitos.","Exigir cumprimento de regras de segurança, circulação e funcionamento dos serviços.","Aplicar sanções rigorosas contra bloqueios e ocupações não autorizados.","Proibir manifestações que contrariem a ordem política ou comprometam a unidade nacional."]],
+["Qual deve ser o papel das Forças Armadas na política?",["Defesa externa, com controle civil e nenhuma intervenção na disputa política.","Defesa nacional e atuação excepcional prevista na Constituição.","Defesa nacional e apoio logístico à segurança em situações legalmente definidas.","Papel ampliado na preservação da ordem em crises institucionais.","Participação direta na direção política do país quando considerada necessária."]]
+]],
+["Nação, imigração e relações internacionais",[
+["Qual deve ser a política de imigração?",["Ampliar a liberdade de circulação e garantir direitos iguais aos imigrantes.","Receber imigrantes com políticas de integração e critérios transparentes.","Regular a entrada conforme emprego, capacidade de acolhimento e segurança.","Adotar limites rigorosos e priorizar interesses econômicos nacionais.","Restringir fortemente a imigração para preservar a identidade cultural nacional."]],
+["O que deve definir o pertencimento à nação?",["A participação na sociedade, independentemente de origem ou cultura.","A cidadania, os direitos e os deveres compartilhados.","A cidadania e a adesão às instituições e à cultura cívica do país.","A continuidade histórica, cultural e linguística da comunidade nacional.","A ancestralidade e a preservação de uma identidade étnica nacional."]],
+["Como o país deve se posicionar diante de organizações internacionais?",["Fortalecer a cooperação internacional e a solidariedade entre povos.","Participar ativamente de acordos multilaterais e instituições internacionais.","Cooperar quando isso for compatível com a soberania e os interesses nacionais.","Priorizar a soberania e limitar compromissos que restrinjam decisões internas.","Rejeitar interferências externas e subordinar acordos ao projeto nacional."]],
+["Qual deve ser a prioridade da política industrial?",["Organizar a produção segundo necessidades sociais e cooperação internacional.","Investir em setores estratégicos, tecnologia e empregos nacionais.","Combinar competitividade privada, inovação e proteção de setores essenciais.","Abrir a economia à concorrência, com poucas barreiras comerciais.","Proteger fortemente a indústria nacional sob direção estratégica do Estado."]],
+["Como o país deve lidar com conflitos internacionais?",["Priorizar solidariedade entre trabalhadores e movimentos populares internacionais.","Priorizar diplomacia, organismos multilaterais e soluções negociadas.","Buscar soluções diplomáticas, mantendo capacidade de defesa e alianças.","Priorizar autonomia estratégica e poder militar dissuasório.","Utilizar a força militar quando necessária à expansão dos interesses nacionais."]]
+]],
+["Transformação social e meio ambiente",[
+["Qual deve ser o ritmo das mudanças sociais e econômicas?",["Transformação estrutural profunda, mesmo que implique ruptura com o sistema atual.","Reformas amplas e progressivas por meios democráticos.","Reformas graduais, avaliando resultados e preservando instituições.","Mudanças limitadas, preservando instituições e práticas tradicionais.","Reorganização profunda da sociedade sob um projeto político nacional unificado."]],
+["Como enfrentar as mudanças climáticas?",["Transformar o modelo de produção e consumo, com controle social dos recursos.","Realizar grandes investimentos públicos e estabelecer metas ambientais obrigatórias.","Combinar regulação, incentivos econômicos e inovação tecnológica.","Priorizar soluções de mercado e inovação, evitando intervenções excessivas.","Subordinar medidas ambientais às prioridades econômicas e estratégicas nacionais."]],
+["Qual deve ser a relação entre trabalhadores e proprietários de empresas?",["Substituir progressivamente a relação entre patrões e empregados pela autogestão.","Ampliar negociação coletiva, participação nos lucros e proteção trabalhista.","Equilibrar direitos trabalhistas e liberdade de gestão empresarial.","Priorizar contratos individuais e flexibilidade nas relações de trabalho.","Organizar trabalhadores e empresários em entidades coordenadas pelo Estado."]],
+["O que deve acontecer quando uma maioria apoia uma medida que restringe direitos de uma minoria?",["A medida deve ser impedida por garantias de direitos e participação das pessoas afetadas.","A Constituição e o Judiciário devem proteger direitos fundamentais.","A decisão majoritária deve prevalecer somente dentro dos limites constitucionais.","A maioria deve ter maior margem de decisão, respeitando garantias legais essenciais.","A unidade e os objetivos coletivos nacionais devem prevalecer sobre reivindicações particulares."]],
+["Qual seria o objetivo central de uma sociedade politicamente organizada?",["Superar as classes sociais e estabelecer o controle coletivo da economia.","Garantir igualdade material, liberdade política e direitos sociais.","Conciliar liberdades individuais, oportunidades e estabilidade institucional.","Preservar liberdade econômica, responsabilidade individual e continuidade social.","Construir uma nação coesa, disciplinada e mobilizada em torno de objetivos comuns."]]
+]]
+];
+
+const qs=[]; sections.forEach((s,si)=>s[1].forEach(q=>qs.push({si,text:q[0],opts:q[1]})));
+let current=0; const answers=Array(qs.length).fill(null);
+const $=id=>document.getElementById(id);
+
+function render(){
+ const q=qs[current], done=answers.filter(x=>x!==null).length;
+ $("section").textContent=`Bloco ${q.si+1} de 6 · ${sections[q.si][0]}`;
+ $("count").textContent=`Pergunta ${current+1} de ${qs.length}`;
+ $("progress").style.width=(done/qs.length*100)+"%";
+ $("dimension").textContent=sections[q.si][0]; $("question").textContent=q.text;
+ $("options").innerHTML="";
+ q.opts.forEach((o,i)=>{
+   const l=document.createElement("label"); l.className="opt";
+   const r=document.createElement("input"); r.type="radio"; r.name="answer"; r.value=i; r.checked=answers[current]===i;
+   r.addEventListener("change",()=>{answers[current]=i;$("error").classList.add("hidden");$("progress").style.width=(answers.filter(x=>x!==null).length/qs.length*100)+"%"});
+   const s=document.createElement("span");s.textContent=o;l.append(r,s);$("options").append(l);
+ });
+ $("back").disabled=current===0; $("next").textContent=current===qs.length-1?"Ver resultado":"Próxima";
+}
+$("back").onclick=()=>{if(current){current--;render();scrollTo({top:0,behavior:"smooth"})}};
+$("next").onclick=()=>{if(answers[current]===null){$("error").classList.remove("hidden");return} if(current<qs.length-1){current++;render();scrollTo({top:0,behavior:"smooth"})}else showResults()};
+
+function mean(ids,map=x=>x){return ids.reduce((a,i)=>a+map(answers[i]),0)/ids.length}
+function pct(v){return Math.round(v/4*100)}
+function showResults(){
+ const economic=pct(mean([0,1,2,3,4,27,29],v=>[0,1,2,4,2][v]));
+ const authority=pct(mean([5,6,7,8,15,16,17,18,19,28],v=>[0,1,2,3,4][v]));
+ const tradition=pct(mean([10,11,12,13,14]));
+ const nationalism=pct(mean([20,21,22,24]));
+ const continuity=pct(mean([9,25,26],v=>v===0?0:v===1?1:v===2?2:v===3?3:0));
+ const pluralism=100-pct(mean([6,7,8,28],v=>[0,.5,1.5,3,4][v]));
+ const axes=[
+ ["Economia","Propriedade coletiva","Livre mercado",economic],
+ ["Poder político","Descentralização","Concentração",authority],
+ ["Costumes","Progressismo","Tradicionalismo",tradition],
+ ["Identidade nacional","Internacionalismo","Nacionalismo",nationalism],
+ ["Mudança política","Ruptura estrutural","Continuidade",continuity],
+ ["Pluralismo","Menor proteção","Maior proteção",pluralism]
+ ];
+
+ // Perfis de referência multidimensionais (0–100). O cálculo mede proximidade, não "qualidade".
+ const profile={economic,authority,tradition,nationalism,continuity,pluralism};
+ const ideologies=[
+  {name:"Anarquismo / socialismo libertário", target:[5,5,10,10,5,95], desc:"anticapitalismo, autogestão e forte descentralização do poder, combinados com ampla proteção às liberdades políticas."},
+  {name:"Comunismo revolucionário", target:[5,55,15,15,5,45], desc:"socialização profunda da economia e transformação estrutural do sistema, com maior abertura à ruptura revolucionária."},
+  {name:"Socialismo democrático", target:[15,20,20,20,25,90], desc:"forte igualdade econômica e ampliação do poder dos trabalhadores por meios democráticos e pluralistas."},
+  {name:"Social-democracia", target:[30,25,25,25,55,90], desc:"economia mista, políticas redistributivas, direitos sociais e compromisso elevado com instituições democráticas."},
+  {name:"Progressismo / liberalismo social", target:[50,20,10,20,55,95], desc:"liberdades civis, pluralismo, progressismo cultural e economia de mercado regulada com proteção social."},
+  {name:"Liberalismo clássico", target:[80,15,30,30,70,95], desc:"propriedade privada, mercado, direitos individuais, limitação do Estado e forte proteção ao pluralismo."},
+  {name:"Libertarianismo", target:[95,5,10,20,65,95], desc:"mercado e propriedade privada combinados com forte limitação do poder estatal e ampla autonomia individual."},
+  {name:"Conservadorismo liberal", target:[75,35,65,50,80,85], desc:"economia de mercado e instituições representativas combinadas com tradição, ordem e mudança gradual."},
+  {name:"Conservadorismo", target:[60,45,80,60,90,75], desc:"valorização da tradição, ordem social e continuidade institucional, sem exigir rejeição ao pluralismo."},
+  {name:"Nacional-conservadorismo", target:[50,60,85,85,80,55], desc:"tradicionalismo e soberania nacional combinados com maior autoridade estatal e políticas orientadas pelo interesse nacional."},
+  {name:"Direita autoritária", target:[60,85,90,90,75,20], desc:"nacionalismo, tradicionalismo e concentração de autoridade, com menor proteção ao pluralismo político."},
+  {name:"Fascismo", target:[40,98,95,100,20,2], desc:"ultranacionalismo, concentração extrema do poder, rejeição do pluralismo e subordinação das instituições a um projeto nacional autoritário."}
+ ];
+ const vals=[economic,authority,tradition,nationalism,continuity,pluralism];
+ function similarity(target){
+   const rms=Math.sqrt(target.reduce((sum,t,i)=>sum+Math.pow(vals[i]-t,2),0)/target.length);
+   return Math.max(0,Math.round(100-rms));
+ }
+ const ranked=ideologies.map(x=>({...x,score:similarity(x.target)})).sort((a,b)=>b.score-a.score);
+ const top=ranked[0], second=ranked[1];
+ const mixed=(top.score-second.score<4) || top.score<58;
+ const heading=mixed ? `Perfil misto — maiores afinidades: ${top.name} e ${second.name}` : `Maior afinidade: ${top.name}`;
+ const secondary=ranked.slice(1,4).map(x=>`${x.name} (${x.score}% de similaridade)`).join(" · ");
+ $("ideologyResult").innerHTML=`<strong style="font-size:1.15rem">${heading}</strong><p style="margin:8px 0 6px;line-height:1.5">${mixed ? "Suas respostas ficam próximas de mais de uma tradição política. A maior proximidade individual é com " + top.name + ", caracterizada neste teste por " + top.desc : "Neste teste, suas respostas se aproximam mais de " + top.name + ", caracterizada por " + top.desc}</p><p style="margin:0;color:var(--muted);font-size:13px"><strong>Afinidades seguintes:</strong> ${secondary}</p>`;
+ $("resultBars").innerHTML=axes.map(a=>`<div class="result-row"><div class="rhead"><span>${a[0]}</span><span>${a[3]}%</span></div><div class="rbar"><div class="rfill" style="width:${a[3]}%"></div></div><div class="rlabels"><span>${a[1]}</span><span>${a[2]}</span></div></div>`).join("");
+ const t=(v,a,b,c)=>v<35?a:v>65?c:b;
+ const parts=[
+ t(economic,"maior controle coletivo ou público da economia","uma posição econômica mista","maior protagonismo do mercado"),
+ t(authority,"preferência por poder mais limitado ou descentralizado","posição intermediária sobre autoridade","maior aceitação de concentração de autoridade"),
+ t(tradition,"posições mais progressistas nos costumes","posições mistas nos costumes","posições mais tradicionalistas nos costumes"),
+ t(nationalism,"orientação mais internacionalista","equilíbrio entre cooperação e soberania","orientação mais nacionalista"),
+ t(continuity,"maior abertura a transformações estruturais","preferência por reformas graduais","maior preferência por continuidade institucional")
+ ];
+ $("summary").textContent="Suas respostas indicam "+parts.slice(0,-1).join(", ")+" e "+parts.at(-1)+". Esses elementos podem aparecer em diferentes combinações dentro de tradições políticas distintas; por isso, o resultado não força uma classificação ideológica única.";
+ $("quiz").classList.add("hidden");$("results").classList.remove("hidden");$("section").textContent="Questionário concluído";$("count").textContent="30 de 30";$("progress").style.width="100%";scrollTo({top:0,behavior:"smooth"});
+}
+$("restart").onclick=()=>{answers.fill(null);current=0;$("results").classList.add("hidden");$("quiz").classList.remove("hidden");render();scrollTo({top:0,behavior:"smooth"})};
+render();
+</script>
+</body>
+</html>
